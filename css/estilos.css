@@ -414,3 +414,13 @@ button:hover { background: var(--neon-blue); }
   font-size: 0.8rem;       /* más compacto */
   margin-top: 0;
 }
+
+/* Fix overflow horizontal en chat */
+html, body {
+  overflow-x: hidden;
+}
+
+#chatContainer, .message {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
