@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SDC-NET · Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<header class="main-header">
+  <div class="header-logo">⟨ SDC-NET ⟩</div>
+  <h1 class="header-title">Sindicato del Crimen<br>Sistema Central</h1>
+  <div class="header-status">● ONLINE</div>
+</header>
+
+<nav class="main-nav">
+  <button class="nav-btn" onclick="location.href='index.html'"><span class="icon">🏠</span><span class="label">Inicio</span></button>
+  <button class="nav-btn" onclick="location.href='noticias.html'"><span class="icon">📰</span><span class="label">Noticias</span></button>
+  <button class="nav-btn active" onclick="location.href='chat.html'"><span class="icon">💬</span><span class="label">Chat</span></button>
+  <button class="nav-btn" onclick="location.href='sistema.html'"><span class="icon">⚙️</span><span class="label">Sistema</span></button>
+</nav>
+
+<div id="accessPanel" class="container">
+  <div class="access-box">
+    <h2>ACCESO RESTRINGIDO</h2>
+    <input type="password" id="passInput" placeholder="Contraseña...">
+    <button onclick="checkPass()">Entrar</button>
+    <p id="errorMsg" style="display:none; color:var(--alert-red); margin-top:10px;">Contraseña incorrecta</p>
+  </div>
+</div>
+
+<div class="chat-wrapper" style="display:none;">
+  <div id="chatContainer">
+    <div class="chat-title">Canal Villano · SDC-NET</div>
+
+    <!-- AQUÍ TODO EL CHAT ORIGINAL, MISMO CONTENIDO -->
+    <div class="message">
+      <div class="msg-header"><div class="avatar">🃏</div><div class="msg-user">Joker</div><div class="msg-time">· hace 5m</div></div>
+      <div class="msg-text">¡Atención, villanos! Acabo de recibir 20.000 petardos MegaBoom Ultra del AliexCrimen 😈💥</div>
+    </div>
+
+    <!-- ... resto de mensajes ... -->
+	  <div class="message">
+    <div class="msg-header"><div class="avatar">🃏</div><div class="msg-user">Joker</div><div class="msg-time">· hace 5m</div></div>
+    <div class="msg-text">¡Atención, villanos! Acabo de recibir 20.000 petardos MegaBoom Ultra del AliexCrimen 😈💥</div>
+  </div>
+
+  <div class="message reply">
+    <div class="msg-header"><div class="avatar">💖</div><div class="msg-user">Harley Quinn</div><div class="msg-time">· hace 4m</div></div>
+    <div class="msg-text">Ay mi payasito... ¿Dónde explotamos cosas hoy? 😍🔨</div>
+  </div>
+
+  <div class="message reply">
+    <div class="msg-header"><div class="avatar">🤖</div><div class="msg-user">Lex Luthor</div><div class="msg-time">· hace 4m</div></div>
+    <div class="msg-text">¿De verdad petardos? Estoy diseñando un dispositivo para dejar sin luz a medio país.</div>
+  </div>
+
+  <div class="message reply reply-2">
+    <div class="msg-header"><div class="avatar">❓</div><div class="msg-user">Enigma</div><div class="msg-time">· hace 4m</div></div>
+    <div class="msg-text">¿Sin luz, eh? Yo ya tengo tres acertijos listos para los colegios. ¡A ver quién los resuelve!</div>
+  </div>
+
+  <div class="message reply reply-3">
+    <div class="msg-header"><div class="avatar">🎅</div><div class="msg-user">Santa Malo</div><div class="msg-time">· hace 4m</div></div>
+    <div class="msg-text">Puedo repartirlos yo mismo. Repartir caos en Navidad es mi especialidad. HO. HO. NO. 🔥</div>
+  </div>
+
+  <div class="message reply reply-4">
+    <div class="msg-header"><div class="avatar">🎄</div><div class="msg-user">Scrooge</div><div class="msg-time">· hace 3m</div></div>
+    <div class="msg-text">Bah. Nada da más miedo que las facturas de calefacción. Eso sí es villanía.</div>
+  </div>
+
+  <div class="message reply">
+    <div class="msg-header"><div class="avatar">🧪</div><div class="msg-user">Gru</div><div class="msg-time">· hace 3m</div></div>
+    <div class="msg-text">Yo tengo minions aburridos. Si alguien necesita mano de obra, ya sabéis.</div>
+  </div>
+
+  <!-- SEGUNDO BLOQUE -->
+
+  <div class="message">
+    <div class="msg-header"><div class="avatar">🃏</div><div class="msg-user">Joker</div><div class="msg-time">· hace 3m</div></div>
+    <div class="msg-text">¿Hola? ¿Hola? Creo que no me funciona esto.</div>
+  </div>
+
+  <div class="message reply">
+    <div class="msg-header"><div class="avatar">❓</div><div class="msg-user">Enigma</div><div class="msg-time">· hace 3m</div></div>
+    <div class="msg-text">Sí funciona. Simplemente estamos pasando de ti. Las bombetas son de críos.</div>
+  </div>
+
+  <!-- TERCER BLOQUE -->
+
+  <div class="message">
+    <div class="msg-header"><div class="avatar">🃏</div><div class="msg-user">Joker</div><div class="msg-time">· hace 2m</div></div>
+    <div class="msg-text">¿Habéis visto mi nueva broma preparada para Gotham?</div>
+  </div>
+
+  <div class="message reply">
+    <div class="msg-header"><div class="avatar">🤖</div><div class="msg-user">Lex Luthor</div><div class="msg-time">· hace 2m</div></div>
+    <div class="msg-text">Estoy demasiado ocupado intentando dominar el mundo para tus tonterías.</div>
+  </div>
+
+  <div class="message reply reply-2">
+    <div class="msg-header"><div class="avatar">❓</div><div class="msg-user">Enigma</div><div class="msg-time">· hace 2m</div></div>
+    <div class="msg-text">Yo prefiero los acertijos, pero bueno... cada loco con su tema.</div>
+  </div>
+
+  <div class="message reply reply-2">
+    <div class="msg-header"><div class="avatar">💖</div><div class="msg-user">Harley Quinn</div><div class="msg-time">· hace 2m</div></div>
+    <div class="msg-text">¡Encontré las municiones! Estaban en la caja de zapatos, no en el cañón.</div>
+  </div>
+
+  <!-- CUARTO BLOQUE -->
+
+  <div class="message">
+    <div class="msg-header"><div class="avatar">🎅</div><div class="msg-user">Santa Malo</div><div class="msg-time">· hace 1m</div></div>
+    <div class="msg-text">La lechuga está colocada en el Colegio Santa Ana. Operación en marcha.</div>
+  </div>
+
+  <div class="message reply">
+    <div class="msg-header"><div class="avatar">🃏</div><div class="msg-user">Joker</div><div class="msg-time">· hace 1m</div></div>
+    <div class="msg-text">¿Lechuga? Pensé que era para hacer bocatas, no para planes malvados.</div>
+  </div>
+
+  <div class="message reply">
+    <div class="msg-header"><div class="avatar">⚔️</div><div class="msg-user">Deathstroke</div><div class="msg-time">· hace 1m</div></div>
+    <div class="msg-text">Tus claves ridículas no ayudan, Luthor.</div>
+  </div>
+
+  <div class="message reply reply-2">
+    <div class="msg-header"><div class="avatar">❓</div><div class="msg-user">Enigma</div><div class="msg-time">· hace 1m</div></div>
+    <div class="msg-text">Tranquilo, Deathstroke. Algunos no están a nuestro nivel intelectual.</div>
+  </div>
+
+  <div class="message reply reply-2">
+    <div class="msg-header"><div class="avatar">🧪</div><div class="msg-user">Gru</div><div class="msg-time">· hace 1m</div></div>
+    <div class="msg-text">Mis minions no comen lechuga, pero gracias por la info.</div>
+  </div>
+
+  <div class="message reply reply-2">
+    <div class="msg-header"><div class="avatar">🎄</div><div class="msg-user">Scrooge</div><div class="msg-time">· hace 1m</div></div>
+    <div class="msg-text">Dejar lechuga en colegios... Qué decadencia. Antes robábamos bancos.</div>
+  </div>
+
+  <div class="message reply reply-3">
+    <div class="msg-header"><div class="avatar">🎅</div><div class="msg-user">Lex Luthor</div><div class="msg-time">· hace 1m</div></div>
+    <div class="msg-text">Yo dejaría carbón tóxico. Mucho más apropiado para estas fechas.</div>
+  </div>
+	
+
+    <div class="fade-end"></div>
+    <div id="footerHack">SDC-NET v2.4 — ENCRYPTED CHANNEL</div>
+  </div>
+
+  <div id="goBottom" onclick="toggleScroll()">↓ Ir al final</div>
+</div>
+
+<script>
+let atBottom=false;
+
+window.addEventListener('scroll',()=>{
+  const visible=document.querySelector('.chat-wrapper').style.display==='block';
+  if(!visible) return;
+
+  const mitad=document.body.scrollHeight*0.5;
+  const pos=window.scrollY+window.innerHeight;
+  const btn=document.getElementById('goBottom');
+
+  atBottom=pos>=mitad;
+  btn.innerText=atBottom?'↑ Ir al comienzo':'↓ Ir al final';
+
+  if(window.scrollY<120) btn.classList.remove('show');
+  else btn.classList.add('show');
+});
+
+function toggleScroll(){
+  if(atBottom) window.scrollTo({top:0,behavior:'smooth'});
+  else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  atBottom=!atBottom;
+}
+
+function checkPass(){
+  const v=document.getElementById('passInput').value;
+  if(v==='1234'){
+    document.getElementById('accessPanel').style.display='none';
+    document.querySelector('.chat-wrapper').style.display='block';
+    document.getElementById('goBottom').style.display='block';
+  } else {
+    document.getElementById('errorMsg').style.display='block';
+  }
+}
+
+document.getElementById('passInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') checkPass();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PREVIEW - Sindicato del Crimen</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<div id="loader" class="loader-screen" style="display:none;">
+  <div class="loader-terminal">
+    <pre id="loaderText"></pre>
+    <div class="loader-bar-container"><div class="loader-bar"></div></div>
+  </div>
+</div>
+
+<div id="termsModal" class="modal">
+  <div class="modal-content">
+    <h2>ACCESO RESTRINGIDO</h2>
+    <p>Este sistema pertenece al Sindicato del Crimen.<br>Autorización requerida para continuar.</p>
+    <button onclick="startAccess()">Autorizar acceso</button>
+  </div>
+</div>
+
+<div class="container" style="display:none;">
+  <header class="main-header">
+    <div class="header-logo">⟨ SDC-NET ⟩</div>
+    <h1 class="header-title">Sindicato del Crimen<br>Sistema Central</h1>
+    <div class="header-status">● ONLINE</div>
+  </header>
+
+  <nav class="main-nav">
+    <button class="nav-btn active" onclick="location.href='index.html'"><span class="icon">🏠</span><span class="label">Inicio</span></button>
+    <button class="nav-btn" onclick="location.href='noticias.html'"><span class="icon">📰</span><span class="label">Noticias</span></button>
+    <button class="nav-btn" onclick="location.href='chat.html'"><span class="icon">💬</span><span class="label">Chat</span></button>
+    <button class="nav-btn" onclick="location.href='sistema.html'"><span class="icon">⚙️</span><span class="label">Sistema</span></button>
+  </nav>
+
+  <section class="count-section">
+    <h2>Cuenta atrás</h2>
+    <div id="countdown">Cargando…</div>
+  </section>
+
+  <!-- Noticias (omitted here for brevity but preserved in your real version) -->
+</div>
+
+<script>
+function startAccess() {
+  document.getElementById('termsModal').style.display = 'none';
+  document.getElementById('loader').style.display = 'flex';
+  typeLine();
+  setTimeout(() => {
+    document.getElementById("loader").classList.add("loader-hide");
+    setTimeout(() => {
+      document.getElementById("loader").style.display = "none";
+      document.querySelector('.container').style.display = 'block';
+    }, 900);
+  }, 5000);
+}
+
+const loaderLines = [
+  "[ MONITORING NODE ONLINE ]",
+  "Rastreando actividad del usuario...",
+  "Localizando dirección IP...",
+  "Analizando patrones de comportamiento...",
+  "Estableciendo vigilancia permanente...",
+  "Conectando con nodos ocultos...",
+  "Cifrando información sensible...",
+  "Acceso concedido ✔"
+];
+
+let indexLoader = 0;
+let textElement = document.getElementById("loaderText");
+
+function typeLine() {
+  if (indexLoader < loaderLines.length) {
+    textElement.textContent += loaderLines[indexLoader] + "\n";
+    indexLoader++;
+    setTimeout(typeLine, 430);
+  }
+}
+
+/* --------- Speech synthesis (NO FILES REQUIRED) --------- */
+function speakOmega() {
+  const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
+  msg.pitch = 0.5;
+  msg.rate = 0.9;
+  msg.volume = 1.0;
+  msg.lang = "es-ES";
+  speechSynthesis.speak(msg);
+}
+
+/* --------- COUNTDOWN UPDATED --------- */
+let countdownInterval = null;
+
+function startCountdown() {
+  countdownInterval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+}
+
+function updateCountdown() {
+  const target = new Date("2025-12-23T18:00:00");
+  const now = new Date();
+  const diff = target - now;
+  const box = document.getElementById('countdown');
+  if (!box) return;
+
+  if (diff <= 0) {
+    clearInterval(countdownInterval);
+    speakOmega(); // Voice
+
+    box.innerHTML = `
+      <div class="scanlines">
+        <div class="glitch" data-text="⚠ PROTOCOLO OMEGA ACTIVADO ⚠">
+          ⚠ PROTOCOLO OMEGA ACTIVADO ⚠
+        </div><br><br>
+
+        <div class="glow-anim">
+          El Sindicato del Crimen confirma el inicio de la operación<br>
+          <b>"NOCHE NEGRA 7"</b>.
+        </div><br>
+
+        <div class="alert-blink">
+          Canal Omega abierto — Estado: EN CURSO
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const hours = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, "0");
+  const minutes = String(Math.floor(diff / 1000 / 60 % 60)).padStart(2, "0");
+  const seconds = String(Math.floor(diff / 1000 % 60)).padStart(2, "0");
+  box.innerText = `${hours}:${minutes}:${seconds}`;
+}
+
+startCountdown();
+
+/* Scroll FX */
+window.addEventListener('scroll', () => {
+  const header = document.querySelector('.main-header');
+  const nav = document.querySelector('.main-nav');
+  if (window.scrollY > 20) {
+    header.classList.add('scrolled');
+    nav.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+    nav.classList.remove('scrolled');
+  }
+});
+</script>
+
+</body>
+</html>
