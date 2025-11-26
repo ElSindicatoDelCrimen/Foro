@@ -283,13 +283,16 @@ button:hover { background: var(--neon-blue); }
 
 #accessPanel {
   width: 100%;
-  padding-top: 215px;
+  min-height: calc(100vh - 210px); /* altura real restante tras header + nav */
+  padding-top: 210px; /* mantiene la separación con el header */
   display: flex;
   justify-content: center;
+  align-items: center;   /* 💡 centrado vertical */
   background: transparent;
   position: relative;
   z-index: 1;
 }
+
 
 .access-box {
   background:var(--dark-bg);
