@@ -281,30 +281,34 @@ button:hover { background: var(--neon-blue); }
 
 /* ================== CHAT ================== */
 
+
 #accessPanel {
   width: 100%;
-  min-height: calc(100vh - 210px); /* altura real restante tras header + nav */
-  padding-top: 210px; /* mantiene la separación con el header */
+  min-height: 100vh;
+  padding-top: 240px;     /* ⬅️ Este valor hace que quede justo debajo del header */
+  padding-left: 16px;
+  padding-right: 16px;
+
   display: flex;
   justify-content: center;
-  align-items: center;   /* 💡 centrado vertical */
-  background: transparent;
-  position: relative;
-  z-index: 1;
+  align-items: flex-start;
+  box-sizing: border-box;
 }
+
 
 
 .access-box {
-  background:var(--dark-bg);
-  padding:20px;
-  width:100%;
-  max-width:340px;
-  margin:0 20px;
-  border-radius:8px;
-  border:1px solid var(--panel-border);
-  text-align:center;
-  box-shadow:0 0 25px rgba(40,247,161,0.15);
+  background: var(--dark-bg);
+  padding: 20px;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;                  /* si quieres, aquí mejor aún */
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  text-align: center;
+  box-shadow: 0 0 25px rgba(40,247,161,0.15);
 }
+
 
 #passInput {
   width:100%;
@@ -323,13 +327,13 @@ button:hover { background: var(--neon-blue); }
   max-width:780px;
   margin:auto;
   padding:20px 20px 70px 20px;
-  padding-top:250px;   /* MÁS BAJO — evita totalmente que el header tape el primer mensaje */
+  padding-top:225px;   /* MÁS BAJO — evita totalmente que el header tape el primer mensaje */
   box-sizing:border-box;
 }
 
 .chat-title {
   text-align:center;
-  color:var(--neon-green);
+  color: var(--neon-blue);  /* 💙 ahora coincide con Noticias */
   font-family:var(--font-title);
   font-size:1.6rem;
   margin-bottom:20px;
@@ -426,4 +430,16 @@ html, body {
 #chatContainer, .message {
   max-width: 100%;
   overflow-wrap: break-word;
+}
+
+/* ===== FIJAR CENTRADO REAL EN MÓVILES ===== */
+@media (max-width: 600px) {
+  #accessPanel {
+    padding-top: 140px !important;   /* antes 210px */
+    min-height: calc(100vh - 140px); /* igualamos según header/nav */
+  }
+
+  .access-box {
+    margin-top: 0 !important;
+  }
 }

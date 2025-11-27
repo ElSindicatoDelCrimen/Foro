@@ -22,7 +22,6 @@
   <button class="nav-btn" onclick="location.href='sistema.html'"><span class="icon">⚙️</span><span class="label">Sistema</span></button>
 </nav>
 
-<!-- ❗️ AQUI quitamos class="container" para que nada descuadre la alineación -->
 <div id="accessPanel">
   <div class="access-box">
     <h2>ACCESO RESTRINGIDO</h2>
@@ -36,7 +35,13 @@
   <div id="chatContainer">
     <div class="chat-title">Canal Villano · SDC-NET</div>
 
-    <!-- AQUÍ TODO EL CHAT ORIGINAL -->
+    <!-- AQUÍ TODO EL CHAT ORIGINAL, MISMO CONTENIDO -->
+    <div class="message">
+      <div class="msg-header"><div class="avatar">🃏</div><div class="msg-user">Joker</div><div class="msg-time">· hace 5m</div></div>
+      <div class="msg-text">¡Atención, villanos! Acabo de recibir 20.000 petardos MegaBoom Ultra del AliexCrimen 😈💥</div>
+    </div>
+
+    <!-- ... resto de mensajes ... -->
 	  <div class="message">
     <div class="msg-header"><div class="avatar">🃏</div><div class="msg-user">Joker</div><div class="msg-time">· hace 5m</div></div>
     <div class="msg-text">¡Atención, villanos! Acabo de recibir 20.000 petardos MegaBoom Ultra del AliexCrimen 😈💥</div>
@@ -142,8 +147,7 @@
     <div class="msg-header"><div class="avatar">🎅</div><div class="msg-user">Lex Luthor</div><div class="msg-time">· hace 1m</div></div>
     <div class="msg-text">Yo dejaría carbón tóxico. Mucho más apropiado para estas fechas.</div>
   </div>
-
-    <!-- (resto de mensajes idénticos, no los toco) -->
+	
 
     <div class="fade-end"></div>
     <div id="footerHack">SDC-NET v2.4 — ENCRYPTED CHANNEL</div>
@@ -191,38 +195,6 @@ document.getElementById('passInput').addEventListener('keydown',e=>{
   if(e.key==='Enter') checkPass();
 });
 </script>
-
-
-<!-- ========================================================= -->
-<!--  SCRIPT FINAL: AUTO-AJUSTA EL ACCESS PANEL BAJO EL HEADER -->
-<!-- ========================================================= -->
-
-<script>
-function ajustarAccessPanel() {
-    const header = document.querySelector('.main-header');
-    const nav = document.querySelector('.main-nav');
-    const panel = document.getElementById('accessPanel');
-
-    if (!header || !nav || !panel) return;
-
-    const totalHeight = header.offsetHeight + nav.offsetHeight;
-
-    // Dejamos margen exacto bajo header+nav
-    panel.style.marginTop = (totalHeight + 10) + "px";
-}
-
-// Al cargar
-window.addEventListener('load', ajustarAccessPanel);
-
-// En móvil al girar
-window.addEventListener('orientationchange', () => {
-    setTimeout(ajustarAccessPanel, 300);
-});
-
-// En cambios de tamaño
-window.addEventListener('resize', ajustarAccessPanel);
-</script>
-
 
 </body>
 </html>
