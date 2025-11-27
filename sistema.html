@@ -8,6 +8,102 @@
 <link rel="stylesheet" href="css/estilos.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
+<style>
+/* ===================== ESTILOS DEL PANEL DEL SISTEMA ===================== */
+
+.panel-sistema {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 0 18px rgba(58,170,255,0.08);
+}
+
+/* Medidor de Maldad */
+.maldad-box {
+  margin-top: 20px;
+  padding: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  background: #0e1113;
+}
+
+.maldad-label {
+  font-size: 1rem;
+  color: var(--neon-blue);
+  margin-bottom: 6px;
+}
+
+.maldad-bar-bg {
+  width: 100%;
+  height: 20px;
+  background: #222;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.maldad-bar {
+  height: 100%;
+  width: 40%;
+  background: var(--alert-red);
+  box-shadow: 0 0 10px var(--alert-red);
+  transition: width 0.5s;
+}
+
+/* Terminal */
+.terminal {
+  margin-top: 22px;
+  background: black;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid var(--neon-green);
+  font-family: var(--font-ui);
+  color: var(--neon-green);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  box-shadow: 0 0 15px rgba(40,247,161,0.12);
+}
+
+#terminalOutput {
+  height: 160px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  margin-bottom: 12px;
+}
+
+#terminalInput {
+  width: 100%;
+  padding: 10px;
+  background: #0f1715;
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  box-sizing: border-box;
+}
+
+/* Logs automáticos */
+.logs-box {
+  margin-top: 22px;
+  background: #0c0f11;
+  border: 1px solid var(--panel-border);
+  padding: 14px;
+  border-radius: 6px;
+  height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(58,170,255,0.08);
+}
+
+.log-line {
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+</style>
+
 </head>
 <body>
 
@@ -28,9 +124,265 @@
 
   <h2>Panel del Sistema</h2>
 
-  <p>Sección para futuro panel de control, datos internos, configuraciones, etc.</p>
+  <div class="panel-sistema">
 
+    <!-- ======================== MEDIDOR DE MALDAD ======================== -->
+    <div class="maldad-box">
+      <div class="maldad-label">Nivel global de maldad del Sindicato:</div>
+      <div class="maldad-bar-bg">
+        <div id="maldadBar" class="maldad-bar"></div>
+      </div>
+      <div id="maldadValor" style="margin-top:8px; color:var(--neon-green);">40%</div>
+    </div>
+
+    <!-- ======================== TERMINAL ======================== -->
+    <div class="terminal">
+      <div id="terminalOutput">[SDC-NET] Terminal iniciada.\nEscribe "ayuda" para ver comandos.</div>
+      <input id="terminalInput" type="text" placeholder="> escribe un comando y pulsa ENTER">
+    </div>
+
+    <!-- ======================== LOGS AUTOMÁTICOS ======================== -->
+    <h3>Logs del Núcleo</h3>
+    <div id="logs" class="logs-box"></div>
+
+  </div>
 </div>
+
+<script>
+
+/* ============================================================
+   ========== ICONOS POR VILLANO ===============================
+   ============================================================ */
+const iconos = {
+  "Joker": "🃏",
+  "Harley Quinn": "💖",
+  "Gru": "🧪",
+  "Lex Luthor": "🤖",
+  "Enigma": "❓",
+  "Santa Malo": "🎅",
+  "Scrooge": "🎄",
+  "Deathstroke": "⚔️",
+  "Catwoman": "🐱",
+  "Pingüino": "🐧",
+  "Hiedra Venenosa": "🌿",
+  "Dos Caras": "🪙",
+  "Espantapájaros": "🎭"
+};
+
+/* ============================================================
+   ========== LISTA DE 50+ EVENTOS =============================
+   ============================================================ */
+const eventosVillanos = [
+
+  // JOKER – 6
+  ["Joker", "ha incrementado el caos un 15%."],
+  ["Joker", "ha liberado un gas de risa industrial."],
+  ["Joker", "ha saboteado 3 patrullas policiales."],
+  ["Joker", "ha pintado grafitis explosivos en la comisaría."],
+  ["Joker", "ha causado disturbios en un circo abandonado."],
+  ["Joker", "ha contaminado señales de radio con risas."],
+
+  // HARLEY – 4
+  ["Harley Quinn", "ha detonado un petardo industrial."],
+  ["Harley Quinn", "ha robado un coche patrulla para diversión personal."],
+  ["Harley Quinn", "ha atacado con su mazo una estatua pública."],
+  ["Harley Quinn", "ha incendiado un kiosko de prensa."],
+
+  // GRU – 4
+  ["Gru", "ha liberado 20 minions descontrolados."],
+  ["Gru", "ha robado 6 plátanos del mercado local."],
+  ["Gru", "ha activado accidentalmente un rayo encogedor."],
+  ["Gru", "ha enviado minions a explorar el alcantarillado."],
+
+  // LEX – 4
+  ["Lex Luthor", "ha hackeado señales de vigilancia."],
+  ["Lex Luthor", "ha interceptado comunicaciones heroicas."],
+  ["Lex Luthor", "ha probado un exoesqueleto experimental."],
+  ["Lex Luthor", "ha optimizado energía del núcleo central."],
+
+  // ENIGMA – 4
+  ["Enigma", "ha distribuido 4 acertijos mortales."],
+  ["Enigma", "ha enviado mensajes encriptados a la policía."],
+  ["Enigma", "ha bloqueado un puente con puzzles."],
+  ["Enigma", "ha colocado acertijos en la alcaldía."],
+
+  // SANTA MALO – 5
+  ["Santa Malo", "ha saboteado decoraciones navideñas."],
+  ["Santa Malo", "ha robado regalos de un centro comercial."],
+  ["Santa Malo", "ha distribuido carbón tóxico."],
+  ["Santa Malo", "ha destrozado árboles de Navidad."],
+  ["Santa Malo", "ha secuestrado un reno mecánico."],
+
+  // SCROOGE – 5
+  ["Scrooge", "ha recortado la moral ciudadana un 12%."],
+  ["Scrooge", "ha cerrado un comedor social por diversión."],
+  ["Scrooge", "ha congelado presupuestos públicos."],
+  ["Scrooge", "ha subido impuestos al azar."],
+  ["Scrooge", "ha cortado la electricidad de un barrio entero."],
+
+  // DEATHSTROKE – 4
+  ["Deathstroke", "ha completado un contrato silencioso."],
+  ["Deathstroke", "ha neutralizado a 3 guardias sin ser visto."],
+  ["Deathstroke", "has colocado trampas explosivas en un edificio."],
+  ["Deathstroke", "ha saboteado un vehículo blindado."],
+
+  // CATWOMAN – 4
+  ["Catwoman", "ha robado joyas valoradas en millones."],
+  ["Catwoman", "ha burlado sistemas de seguridad avanzados."],
+  ["Catwoman", "ha dejado marcas felinas en un museo."],
+  ["Catwoman", "ha activado alarmas para confundir a héroes."],
+
+  // PINGÜINO – 4
+  ["Pingüino", "ha soltado pingüinos explosivos en el parque."],
+  ["Pingüino", "ha hackeado cámaras con un paraguas-dron."],
+  ["Pingüino", "ha lanzado humo tóxico desde su paraguas."],
+  ["Pingüino", "ha saboteado un canal de televisión."],
+
+  // HIEDRA – 4
+  ["Hiedra Venenosa", "ha envenenado jardines públicos."],
+  ["Hiedra Venenosa", "ha hecho crecer lianas en edificios."],
+  ["Hiedra Venenosa", "ha intoxicado cultivos urbanos."],
+  ["Hiedra Venenosa", "ha invadido un parque con flora mutada."],
+
+  // DOS CARAS – 4
+  ["Dos Caras", "ha incendiado un banco… solo la mitad."],
+  ["Dos Caras", "ha puesto explosivos simétricos en la ciudad."],
+  ["Dos Caras", "ha tomado decisiones criminales con su moneda."],
+  ["Dos Caras", "ha ejecutado un atraco doble a la vez."],
+
+  // ESPANTAPÁJAROS – 4
+  ["Espantapájaros", "ha liberado gas del miedo."],
+  ["Espantapájaros", "ha provocado pánico en un instituto."],
+  ["Espantapájaros", "ha saboteado ventilación ciudadana."],
+  ["Espantapájaros", "ha contaminado cultivos con toxinas."]
+];
+
+/* ============================================================
+   ========== GRAVEDAD POR VILLANO =============================
+   ============================================================ */
+function gravedad(v) {
+  if (["Santa Malo","Scrooge","Deathstroke","Espantapájaros","Hiedra Venenosa"].includes(v))
+    return "alta";
+  if (["Lex Luthor","Enigma","Pingüino","Dos Caras"].includes(v))
+    return "media";
+  return "baja";
+}
+
+/* ============================================================
+   ========== MALDAD & ACTUALIZACIÓN ===========================
+   ============================================================ */
+let nivelMaldad = 40;
+
+function ajustarMaldad(v) {
+  const g = gravedad(v);
+  let cambio = 0;
+
+  if (g === "baja") cambio = Math.random()*2 +1;
+  if (g === "media") cambio = Math.random()*4 +2;
+  if (g === "alta") cambio = Math.random()*7 +4;
+
+  nivelMaldad = Math.min(100, Math.floor(nivelMaldad + cambio));
+
+  if (nivelMaldad >= 90) {
+    logsDiv.innerHTML += `
+      <div class='log-line' style="color:var(--alert-red); font-weight:bold;">
+      ⚠️ [ALERTA OMEGA] El nivel global de maldad ha superado el 90%.
+      </div>`;
+  }
+
+  actualizarMaldad();
+}
+
+function actualizarMaldad() {
+  maldadBar.style.width = nivelMaldad + "%";
+  maldadValor.innerText = nivelMaldad + "%";
+}
+
+/* ============================================================
+   ========== GENERADOR PRINCIPAL DE LOGS ======================
+   ============================================================ */
+
+const logsDiv = document.getElementById("logs");
+
+function generarLog() {
+  const hora = new Date().toLocaleTimeString("es-ES",{hour12:false});
+  const [villano, texto] = eventosVillanos[Math.floor(Math.random()*eventosVillanos.length)];
+  const icono = iconos[villano] || "⚠️";
+
+  const g = gravedad(villano);
+  let etiqueta = "";
+
+  if (g === "alta") etiqueta = ` <span style="color:var(--alert-red);">(GRAVEDAD ALTA)</span>`;
+  if (g === "media") etiqueta = ` <span style="color:var(--neon-blue);">(media)</span>`;
+  if (g === "baja") etiqueta = ` <span style="color:var(--neon-green);">(baja)</span>`;
+
+  ajustarMaldad(villano);
+
+  logsDiv.innerHTML += `
+    <div class='log-line'>
+      [${hora}] ${icono} <b>${villano}</b> ${texto} ${etiqueta}
+    </div>`;
+
+  logsDiv.scrollTop = logsDiv.scrollHeight;
+}
+
+setInterval(generarLog, 5000);
+generarLog();
+
+/* ============================================================
+   ========== TERMINAL ============================
+   ============================================================ */
+
+const terminalOut = document.getElementById("terminalOutput");
+const terminalIn = document.getElementById("terminalInput");
+
+terminalIn.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const cmd = terminalIn.value.trim();
+    terminalIn.value = "";
+    procesarComando(cmd);
+  }
+});
+
+function escribir(texto) {
+  terminalOut.textContent += "\n" + texto;
+  terminalOut.scrollTop = terminalOut.scrollHeight;
+}
+
+function procesarComando(cmd) {
+  escribir("> " + cmd);
+
+  switch(cmd.toLowerCase()) {
+    case "ayuda":
+      escribir("Comandos disponibles:\nestado\nmaldad\nlogs\nheroes\nlimpiar");
+      break;
+
+    case "estado":
+      escribir("[ESTADO] Núcleo operativo. Nivel de maldad: " + nivelMaldad + "%.");
+      break;
+
+    case "maldad":
+      escribir("[MALDAD] Nivel global actual: " + nivelMaldad + "%.");
+      break;
+
+    case "logs":
+      escribir("[LOGS] Mostrando los últimos eventos del Sindicato.");
+      break;
+
+    case "heroes":
+      escribir("[ALERTA] Señales de héroes detectadas en la zona norte.");
+      break;
+
+    case "limpiar":
+      terminalOut.textContent = "[SDC-NET] Consola limpiada.";
+      break;
+
+    default:
+      escribir("[ERROR] Comando no reconocido. Usa 'ayuda'.");
+  }
+}
+
+</script>
 
 </body>
 </html>
