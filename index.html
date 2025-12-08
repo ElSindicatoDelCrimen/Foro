@@ -46,67 +46,80 @@
 
 <script>
 /* ======================================================
-   SIRENA MILITAR (SIN ARCHIVOS — FUNCIONA EN IPHONE)
+   SIRENA MILITAR 3–1 (PI–PI–PI–PIPÍÍÍ) — COMPATIBLE IPHONE
 ====================================================== */
-function sonarSirenaMilitar() {
+let alarmaInterval = null;
+
+function sonarSirenaPatron() {
   try {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
+    let step = 0;
 
-    osc.type = "sawtooth";
-    osc.connect(gain);
-    gain.connect(audioContext.destination);
+    alarmaInterval = setInterval(() => {
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = "square";
 
-    let t = audioContext.currentTime;
-    const cycles = 4;
+      let freq = 800;
+      let dur = 0.12;
 
-    for (let i = 0; i < cycles; i++) {
-      osc.frequency.setValueAtTime(600, t);
-      gain.gain.setValueAtTime(0.7, t);
-      t += 0.25;
+      switch (step) {
+        case 0:
+        case 1:
+        case 2:
+          freq = 800;  // PI
+          dur = 0.12;
+          break;
+        case 3:
+          freq = 1200; // PIPÍÍÍ
+          dur = 0.25;
+          break;
+      }
 
-      osc.frequency.setValueAtTime(300, t);
-      gain.gain.setValueAtTime(0.7, t);
-      t += 0.25;
-    }
+      osc.frequency.value = freq;
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
 
-    gain.gain.setValueAtTime(0, t);
-    osc.start(audioContext.currentTime);
-    osc.stop(t + 0.1);
+      gain.gain.setValueAtTime(0.6, audioContext.currentTime);
+      osc.start(audioContext.currentTime);
+      osc.stop(audioContext.currentTime + dur);
 
-  } catch(e) {
-    console.warn("Error al reproducir sirena militar:", e);
+      step = (step + 1) % 4;
+
+    }, 300);
+
+  } catch (e) {
+    console.warn("Error en la sirena patrón:", e);
   }
 }
 
 /* ======================================================
-   DESBLOQUEO DE AUDIO Y VOZ PARA iPHONE
+   DESBLOQUEO AUDIO + VOZ EN IPHONE
 ====================================================== */
 let vozOK = false;
 
 function unlockAudioAndVoice() {
 
-  // DESBLOQUEO DE VOZ
+  // Desbloqueo de voz
   const init = new SpeechSynthesisUtterance(".");
   init.volume = 0;
   init.lang = "es-ES";
   try { speechSynthesis.speak(init); } catch(e) {}
   vozOK = true;
 
-  // DESBLOQUEO DE WEB AUDIO (INDISPENSABLE PARA IPHONE)
+  // Desbloqueo de WebAudio (clave para iPhone)
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const empty = ctx.createOscillator();
-    empty.frequency.value = 0;
-    empty.connect(ctx.destination);
-    empty.start();
-    empty.stop();
+    const osc = ctx.createOscillator();
+    osc.frequency.value = 1;
+    osc.connect(ctx.destination);
+    osc.start();
+    osc.stop();
   } catch(e) {}
 }
 
 /* ======================================================
-   VOZ FINAL
+   VOZ OMEGA
 ====================================================== */
 function speakOmega() {
   if (!vozOK) return;
@@ -114,11 +127,12 @@ function speakOmega() {
   msg.pitch = 0.5;
   msg.rate = 0.9;
   msg.volume = 1.0;
+  msg.lang = "es-ES";
   speechSynthesis.speak(msg);
 }
 
 /* ======================================================
-   ARRANQUE DEL SISTEMA
+   ARRANQUE SISTEMA
 ====================================================== */
 function startAccess() {
 
@@ -163,7 +177,7 @@ function typeLine() {
 }
 
 /* ======================================================
-   COUNTDOWN (FECHA DE AYER = ACTIVADO YA)
+   COUNTDOWN — FECHA DE AYER PARA ACTIVACIÓN INMEDIATA
 ====================================================== */
 let countdownInterval = null;
 
@@ -174,9 +188,8 @@ function startCountdown() {
 
 function updateCountdown() {
 
-  // FECHA DE AYER PARA ACTIVAR AUTOMÁTICAMENTE
   const target = new Date();
-  target.setDate(target.getDate() - 1);
+  target.setDate(target.getDate() - 1); // AYER
 
   const now = new Date();
   const diff = target - now;
@@ -185,7 +198,7 @@ function updateCountdown() {
   if (diff <= 0) {
     clearInterval(countdownInterval);
 
-    sonarSirenaMilitar();
+    sonarSirenaPatron();
     speakOmega();
 
     box.innerHTML = `
@@ -213,7 +226,7 @@ function updateCountdown() {
 startCountdown();
 
 /* ======================================================
-   SCROLL HEADER FX
+   SCROLL FX
 ====================================================== */
 window.addEventListener('scroll', () => {
   const header = document.querySelector('.main-header');
@@ -230,5 +243,3 @@ window.addEventListener('scroll', () => {
 
 </body>
 </html>
-
-
