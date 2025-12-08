@@ -16,22 +16,6 @@
   </div>
 </div>
 
-<!-- BOTÓN PARA ACTIVAR VOZ EN iPHONE/iPAD -->
-<button id="activarVoz" style="
-  display:none;
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#3aaaff;
-  color:black;
-  padding:14px 18px;
-  border:none;
-  border-radius:8px;
-  font-size:1rem;
-  z-index:9999;
-  box-shadow:0 0 12px #3aaaff;
-">🔊 Activar Voz</button>
-
 <div id="termsModal" class="modal">
   <div class="modal-content">
     <h2>ACCESO RESTRINGIDO</h2>
@@ -58,45 +42,33 @@
     <h2>Cuenta atrás</h2>
     <div id="countdown">Cargando…</div>
   </section>
-
 </div>
 
 <script>
-/* ----------------------------------------------------------
-   SISTEMA DE ACTIVACIÓN DE VOZ ESPECIAL PARA iPHONE / iOS
----------------------------------------------------------- */
+/* ======================================================
+   ✔ FIX AUTOMÁTICO DE VOZ PARA iPHONE / iOS
+   Se activa al pulsar "Autorizar acceso".
+   Este clic desbloquea speechSynthesis en iOS.
+====================================================== */
 
-let vozLista = false;
+let vozDesbloqueada = false;
 
-// Detectar si es iPhone/iPad
-function esIOS() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-         (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+function desbloquearVozIOS() {
+  if (vozDesbloqueada) return;
+
+  // Utterance silencioso que desbloquea la voz en iOS
+  const init = new SpeechSynthesisUtterance(".");
+  init.volume = 0;
+  init.lang = "es-ES";
+
+  speechSynthesis.speak(init);
+  vozDesbloqueada = true;
 }
 
-window.addEventListener("load", () => {
-  if (esIOS()) {
-    document.getElementById("activarVoz").style.display = "block";
-  }
-});
-
-// El usuario toca el botón → iOS ya permite speechSynthesis
-document.getElementById("activarVoz").addEventListener("click", () => {
-  const init = new SpeechSynthesisUtterance("Voz activada.");
-  init.lang = "es-ES";
-  speechSynthesis.speak(init);
-
-  vozLista = true;
-  document.getElementById("activarVoz").style.display = "none";
-});
-
-
-/* ----------------------------------------------------------
+/* ======================================================
    FUNCIÓN DE VOZ ORIGINAL
----------------------------------------------------------- */
+====================================================== */
 function speakOmega() {
-  if (!vozLista && esIOS()) return; // seguridad iPhone
-
   const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
   msg.pitch = 0.5;
   msg.rate = 0.9;
@@ -105,15 +77,18 @@ function speakOmega() {
   speechSynthesis.speak(msg);
 }
 
-
-
-/* ----------------------------------------------------------
-   ANIMACIÓN DE CARGA
----------------------------------------------------------- */
+/* ======================================================
+   CARGA CON ANIMACIÓN Y DESBLOQUEO DE VOZ
+====================================================== */
 function startAccess() {
+
+  // 🔊 Desbloqueo automático de voz en iOS (SIN BOTONES EXTRA)
+  desbloquearVozIOS();
+
   document.getElementById('termsModal').style.display = 'none';
   document.getElementById('loader').style.display = 'flex';
   typeLine();
+
   setTimeout(() => {
     document.getElementById("loader").classList.add("loader-hide");
     setTimeout(() => {
@@ -123,6 +98,9 @@ function startAccess() {
   }, 5000);
 }
 
+/* ======================================================
+   ANIMACIÓN TERMINAL
+====================================================== */
 const loaderLines = [
   "[ MONITORING NODE ONLINE ]",
   "Rastreando actividad del usuario...",
@@ -145,11 +123,9 @@ function typeLine() {
   }
 }
 
-
-
-/* ----------------------------------------------------------
-   COUNTDOWN CON DISPARO DE VOZ
----------------------------------------------------------- */
+/* ======================================================
+   COUNTDOWN
+====================================================== */
 let countdownInterval = null;
 
 function startCountdown() {
@@ -158,7 +134,7 @@ function startCountdown() {
 }
 
 function updateCountdown() {
-  const target = new Date("2025-12-08T18:10:00");
+  const target = new Date("2025-12-22T18:10:00");
   const now = new Date();
   const diff = target - now;
   const box = document.getElementById('countdown');
@@ -167,7 +143,7 @@ function updateCountdown() {
   if (diff <= 0) {
     clearInterval(countdownInterval);
 
-    // 🔊 si la voz está activada, se reproduce
+    // 🔊 Ya podemos llamar a la voz con normalidad
     speakOmega();
 
     box.innerHTML = `
@@ -197,11 +173,9 @@ function updateCountdown() {
 
 startCountdown();
 
-
-
-/* ----------------------------------------------------------
-   SCROLL FX DEL HEADER
----------------------------------------------------------- */
+/* ======================================================
+   EFECTO SCROLL HEADER
+====================================================== */
 window.addEventListener('scroll', () => {
   const header = document.querySelector('.main-header');
   const nav = document.querySelector('.main-nav');
@@ -217,4 +191,3 @@ window.addEventListener('scroll', () => {
 
 </body>
 </html>
-
