@@ -16,6 +16,22 @@
   </div>
 </div>
 
+<!-- BOTÓN PARA ACTIVAR VOZ EN iPHONE/iPAD -->
+<button id="activarVoz" style="
+  display:none;
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#3aaaff;
+  color:black;
+  padding:14px 18px;
+  border:none;
+  border-radius:8px;
+  font-size:1rem;
+  z-index:9999;
+  box-shadow:0 0 12px #3aaaff;
+">🔊 Activar Voz</button>
+
 <div id="termsModal" class="modal">
   <div class="modal-content">
     <h2>ACCESO RESTRINGIDO</h2>
@@ -43,10 +59,57 @@
     <div id="countdown">Cargando…</div>
   </section>
 
-  <!-- Noticias (omitted here for brevity but preserved in your real version) -->
 </div>
 
 <script>
+/* ----------------------------------------------------------
+   SISTEMA DE ACTIVACIÓN DE VOZ ESPECIAL PARA iPHONE / iOS
+---------------------------------------------------------- */
+
+let vozLista = false;
+
+// Detectar si es iPhone/iPad
+function esIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+         (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+}
+
+window.addEventListener("load", () => {
+  if (esIOS()) {
+    document.getElementById("activarVoz").style.display = "block";
+  }
+});
+
+// El usuario toca el botón → iOS ya permite speechSynthesis
+document.getElementById("activarVoz").addEventListener("click", () => {
+  const init = new SpeechSynthesisUtterance("Voz activada.");
+  init.lang = "es-ES";
+  speechSynthesis.speak(init);
+
+  vozLista = true;
+  document.getElementById("activarVoz").style.display = "none";
+});
+
+
+/* ----------------------------------------------------------
+   FUNCIÓN DE VOZ ORIGINAL
+---------------------------------------------------------- */
+function speakOmega() {
+  if (!vozLista && esIOS()) return; // seguridad iPhone
+
+  const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
+  msg.pitch = 0.5;
+  msg.rate = 0.9;
+  msg.volume = 1.0;
+  msg.lang = "es-ES";
+  speechSynthesis.speak(msg);
+}
+
+
+
+/* ----------------------------------------------------------
+   ANIMACIÓN DE CARGA
+---------------------------------------------------------- */
 function startAccess() {
   document.getElementById('termsModal').style.display = 'none';
   document.getElementById('loader').style.display = 'flex';
@@ -82,17 +145,11 @@ function typeLine() {
   }
 }
 
-/* --------- Speech synthesis (NO FILES REQUIRED) --------- */
-function speakOmega() {
-  const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
-  msg.pitch = 0.5;
-  msg.rate = 0.9;
-  msg.volume = 1.0;
-  msg.lang = "es-ES";
-  speechSynthesis.speak(msg);
-}
 
-/* --------- COUNTDOWN UPDATED --------- */
+
+/* ----------------------------------------------------------
+   COUNTDOWN CON DISPARO DE VOZ
+---------------------------------------------------------- */
 let countdownInterval = null;
 
 function startCountdown() {
@@ -101,8 +158,7 @@ function startCountdown() {
 }
 
 function updateCountdown() {
-  /*const target = new Date("2025-12-23T18:00:00");*/
-  const target = new Date("2025-12-08T13:00:00");
+  const target = new Date("2025-12-22T18:10:00");
   const now = new Date();
   const diff = target - now;
   const box = document.getElementById('countdown');
@@ -110,7 +166,9 @@ function updateCountdown() {
 
   if (diff <= 0) {
     clearInterval(countdownInterval);
-    speakOmega(); // Voice
+
+    // 🔊 si la voz está activada, se reproduce
+    speakOmega();
 
     box.innerHTML = `
       <div class="scanlines">
@@ -124,7 +182,7 @@ function updateCountdown() {
         </div><br>
 
         <div class="alert-blink">
-          Canal Omega abierto — Estado: EN CURSO
+          Canal Omega abierto — Contraseña li24ruXIMAYpar175
         </div>
       </div>
     `;
@@ -139,7 +197,11 @@ function updateCountdown() {
 
 startCountdown();
 
-/* Scroll FX */
+
+
+/* ----------------------------------------------------------
+   SCROLL FX DEL HEADER
+---------------------------------------------------------- */
 window.addEventListener('scroll', () => {
   const header = document.querySelector('.main-header');
   const nav = document.querySelector('.main-nav');
@@ -155,4 +217,3 @@ window.addEventListener('scroll', () => {
 
 </body>
 </html>
-
