@@ -9,6 +9,9 @@
 </head>
 <body>
 
+<!-- PRELOAD DEL SONIDO DE ALARMA -->
+<audio id="alarma" src="audio/alarm.wav" preload="auto"></audio>
+
 <div id="loader" class="loader-screen" style="display:none;">
   <div class="loader-terminal">
     <pre id="loaderText"></pre>
@@ -46,29 +49,47 @@
 
 <script>
 /* ======================================================
-   ✔ FIX AUTOMÁTICO DE VOZ PARA iPHONE / iOS
-   Se activa al pulsar "Autorizar acceso".
-   Este clic desbloquea speechSynthesis en iOS.
+   DESBLOQUEO AUTOMÁTICO DE VOZ + AUDIO PARA iPHONE
 ====================================================== */
 
-let vozDesbloqueada = false;
+let vozOK = false;
+let audioOK = false;
 
-function desbloquearVozIOS() {
-  if (vozDesbloqueada) return;
+function unlockAudioAndVoice() {
 
-  // Utterance silencioso que desbloquea la voz en iOS
+  // Utterance silencioso → desbloquea speechSynthesis en iOS
   const init = new SpeechSynthesisUtterance(".");
   init.volume = 0;
   init.lang = "es-ES";
-
   speechSynthesis.speak(init);
-  vozDesbloqueada = true;
+  vozOK = true;
+
+  // Reproducir y pausar el audio → desbloquea HTML5 audio
+  const alarma = document.getElementById("alarma");
+  alarma.volume = 0;
+  alarma.play().then(() => {
+    alarma.pause();
+    alarma.currentTime = 0;
+    audioOK = true;
+  }).catch(() => {
+    // iOS a veces requiere 2 intentos, lo reintentamos silencioso
+    setTimeout(() => {
+      alarma.play().then(() => {
+        alarma.pause();
+        alarma.currentTime = 0;
+        audioOK = true;
+      });
+    }, 150);
+  });
 }
 
+
 /* ======================================================
-   FUNCIÓN DE VOZ ORIGINAL
+   FUNCIÓN DE VOZ
 ====================================================== */
 function speakOmega() {
+  if (!vozOK) return;
+
   const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
   msg.pitch = 0.5;
   msg.rate = 0.9;
@@ -77,14 +98,16 @@ function speakOmega() {
   speechSynthesis.speak(msg);
 }
 
+
 /* ======================================================
-   CARGA CON ANIMACIÓN Y DESBLOQUEO DE VOZ
+   ARRANQUE DEL SISTEMA
 ====================================================== */
 function startAccess() {
 
-  // 🔊 Desbloqueo automático de voz en iOS (SIN BOTONES EXTRA)
-  desbloquearVozIOS();
+  // 1️⃣ DESBLOQUEO DE VOZ + AUDIO (iPhone compatible)
+  unlockAudioAndVoice();
 
+  // 2️⃣ Animación de acceso
   document.getElementById('termsModal').style.display = 'none';
   document.getElementById('loader').style.display = 'flex';
   typeLine();
@@ -98,8 +121,9 @@ function startAccess() {
   }, 5000);
 }
 
+
 /* ======================================================
-   ANIMACIÓN TERMINAL
+   TERMINAL DE CARGA
 ====================================================== */
 const loaderLines = [
   "[ MONITORING NODE ONLINE ]",
@@ -123,6 +147,7 @@ function typeLine() {
   }
 }
 
+
 /* ======================================================
    COUNTDOWN
 ====================================================== */
@@ -143,7 +168,14 @@ function updateCountdown() {
   if (diff <= 0) {
     clearInterval(countdownInterval);
 
-    // 🔊 Ya podemos llamar a la voz con normalidad
+    // 1️⃣ Pitido de alarma
+    const alarma = document.getElementById("alarma");
+    if (audioOK) {
+      alarma.volume = 1;
+      alarma.play();
+    }
+
+    // 2️⃣ Voz del protocolo
     speakOmega();
 
     box.innerHTML = `
@@ -173,8 +205,9 @@ function updateCountdown() {
 
 startCountdown();
 
+
 /* ======================================================
-   EFECTO SCROLL HEADER
+   SCROLL HEADER FX
 ====================================================== */
 window.addEventListener('scroll', () => {
   const header = document.querySelector('.main-header');
@@ -191,4 +224,3 @@ window.addEventListener('scroll', () => {
 
 </body>
 </html>
-
