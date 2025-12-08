@@ -9,6 +9,7 @@
 </head>
 <body>
 
+<!-- LOADER -->
 <div id="loader" class="loader-screen" style="display:none;">
   <div class="loader-terminal">
     <pre id="loaderText"></pre>
@@ -16,6 +17,7 @@
   </div>
 </div>
 
+<!-- ACCESO -->
 <div id="termsModal" class="modal">
   <div class="modal-content">
     <h2>ACCESO RESTRINGIDO</h2>
@@ -24,6 +26,7 @@
   </div>
 </div>
 
+<!-- CONTENIDO -->
 <div class="container" style="display:none;">
   <header class="main-header">
     <div class="header-logo">⟨ SDC-NET ⟩</div>
@@ -46,200 +49,64 @@
 
 <script>
 /* ======================================================
-   SIRENA MILITAR 3–1 (PI–PI–PI–PIPÍÍÍ) — COMPATIBLE IPHONE
+   SIRENA NUCLEAR DE BÚNKER — LOOP
 ====================================================== */
 let alarmaInterval = null;
 
-function sonarSirenaPatron() {
+function sirenaNuclearBunker() {
   try {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    let step = 0;
 
     alarmaInterval = setInterval(() => {
+
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
-      osc.type = "square";
+      const filter = audioContext.createBiquadFilter();
 
-      let freq = 800;
-      let dur = 0.12;
+      // Oscilador nuclear
+      osc.type = "sawtooth";
 
-      switch (step) {
-        case 0:
-        case 1:
-        case 2:
-          freq = 800;  // PI
-          dur = 0.12;
-          break;
-        case 3:
-          freq = 1200; // PIPÍÍÍ
-          dur = 0.25;
-          break;
-      }
+      // Filtro estilo bunker subterráneo
+      filter.type = "lowpass";
+      filter.frequency.value = 600;
+      filter.Q.value = 18;
 
-      osc.frequency.value = freq;
-      osc.connect(gain);
+      osc.connect(filter);
+      filter.connect(gain);
       gain.connect(audioContext.destination);
 
-      gain.gain.setValueAtTime(0.6, audioContext.currentTime);
-      osc.start(audioContext.currentTime);
-      osc.stop(audioContext.currentTime + dur);
+      let t = audioContext.currentTime;
 
-      step = (step + 1) % 4;
+      gain.gain.setValueAtTime(0.8, t);
 
-    }, 300);
+      // ASCENSO nuclear WOOOOOOP
+      osc.frequency.setValueAtTime(180, t);
+      osc.frequency.exponentialRampToValueAtTime(1200, t + 1.4);
+
+      // CAÍDA metálica
+      osc.frequency.exponentialRampToValueAtTime(160, t + 1.7);
+
+      // Filtro se cierra (sensación de profundidad)
+      filter.frequency.exponentialRampToValueAtTime(200, t + 1.7);
+
+      // Desvanecer
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
+
+      osc.start(t);
+      osc.stop(t + 1.85);
+
+    }, 1900);
 
   } catch (e) {
-    console.warn("Error en la sirena patrón:", e);
+    console.warn("Error en sirena bunker:", e);
   }
 }
 
 /* ======================================================
-   DESBLOQUEO AUDIO + VOZ EN IPHONE
+   DESBLOQUEO AUDIO + VOZ (iPhone)
 ====================================================== */
 let vozOK = false;
 
 function unlockAudioAndVoice() {
-
   // Desbloqueo de voz
-  const init = new SpeechSynthesisUtterance(".");
-  init.volume = 0;
-  init.lang = "es-ES";
-  try { speechSynthesis.speak(init); } catch(e) {}
-  vozOK = true;
-
-  // Desbloqueo de WebAudio (clave para iPhone)
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    osc.frequency.value = 1;
-    osc.connect(ctx.destination);
-    osc.start();
-    osc.stop();
-  } catch(e) {}
-}
-
-/* ======================================================
-   VOZ OMEGA
-====================================================== */
-function speakOmega() {
-  if (!vozOK) return;
-  const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
-  msg.pitch = 0.5;
-  msg.rate = 0.9;
-  msg.volume = 1.0;
-  msg.lang = "es-ES";
-  speechSynthesis.speak(msg);
-}
-
-/* ======================================================
-   ARRANQUE SISTEMA
-====================================================== */
-function startAccess() {
-
-  unlockAudioAndVoice();
-
-  document.getElementById('termsModal').style.display = 'none';
-  document.getElementById('loader').style.display = 'flex';
-  typeLine();
-
-  setTimeout(() => {
-    document.getElementById("loader").classList.add("loader-hide");
-    setTimeout(() => {
-      document.getElementById("loader").style.display = "none";
-      document.querySelector('.container').style.display = 'block';
-    }, 900);
-  }, 5000);
-}
-
-/* ======================================================
-   ANIMACIÓN TERMINAL
-====================================================== */
-const loaderLines = [
-  "[ MONITORING NODE ONLINE ]",
-  "Rastreando actividad del usuario...",
-  "Localizando dirección IP...",
-  "Analizando patrones de comportamiento...",
-  "Estableciendo vigilancia permanente...",
-  "Conectando con nodos ocultos...",
-  "Cifrando información sensible...",
-  "Acceso concedido ✔"
-];
-
-let indexLoader = 0;
-let textElement = document.getElementById("loaderText");
-
-function typeLine() {
-  if (indexLoader < loaderLines.length) {
-    textElement.textContent += loaderLines[indexLoader] + "\n";
-    indexLoader++;
-    setTimeout(typeLine, 430);
-  }
-}
-
-/* ======================================================
-   COUNTDOWN — FECHA DE AYER PARA ACTIVACIÓN INMEDIATA
-====================================================== */
-let countdownInterval = null;
-
-function startCountdown() {
-  countdownInterval = setInterval(updateCountdown, 1000);
-  updateCountdown();
-}
-
-function updateCountdown() {
-
-  const target = new Date();
-  target.setDate(target.getDate() - 1); // AYER
-
-  const now = new Date();
-  const diff = target - now;
-  const box = document.getElementById('countdown');
-
-  if (diff <= 0) {
-    clearInterval(countdownInterval);
-
-    sonarSirenaPatron();
-    speakOmega();
-
-    box.innerHTML = `
-      <div class="scanlines">
-        <div class="glitch" data-text="⚠ PROTOCOLO OMEGA ACTIVADO ⚠">
-          ⚠ PROTOCOLO OMEGA ACTIVADO ⚠
-        </div><br><br>
-
-        <div class="glow-anim">
-          El Sindicato del Crimen confirma el inicio de la operación<br>
-          <b>"NOCHE NEGRA NAVIDEÑA"</b>.
-        </div><br>
-
-        <div class="alert-blink">
-          Canal Omega abierto — Contraseña li24ruXIMAYpar175
-        </div>
-      </div>
-    `;
-    return;
-  }
-
-  box.innerText = "00:00:00";
-}
-
-startCountdown();
-
-/* ======================================================
-   SCROLL FX
-====================================================== */
-window.addEventListener('scroll', () => {
-  const header = document.querySelector('.main-header');
-  const nav = document.querySelector('.main-nav');
-  if (window.scrollY > 20) {
-    header.classList.add('scrolled');
-    nav.classList.add('scrolled');
-  } else {
-    header.classList.remove('scrolled');
-    nav.classList.remove('scrolled');
-  }
-});
-</script>
-
-</body>
-</html>
+  const init = new SpeechSynthesisUtterance
