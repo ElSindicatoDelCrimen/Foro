@@ -49,56 +49,54 @@
 
 <script>
 /* ======================================================
-   SIRENA NUCLEAR DE BÚNKER — LOOP
+   SIRENA PIPIPI MILITAR 3-1
 ====================================================== */
 let alarmaInterval = null;
 
-function sirenaNuclearBunker() {
+function sonarSirenaPatron() {
   try {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    let step = 0;
 
     alarmaInterval = setInterval(() => {
 
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
-      const filter = audioContext.createBiquadFilter();
 
-      // Oscilador nuclear
-      osc.type = "sawtooth";
+      osc.type = "square"; // sonido militar
+      let freq = 800;
+      let dur = 0.12;
 
-      // Filtro estilo bunker subterráneo
-      filter.type = "lowpass";
-      filter.frequency.value = 600;
-      filter.Q.value = 18;
+      switch (step) {
+        case 0:
+        case 1:
+        case 2:
+          freq = 800;  // PI
+          dur = 0.12;
+          break;
 
-      osc.connect(filter);
-      filter.connect(gain);
+        case 3:
+          freq = 1200; // PIPÍÍÍ
+          dur = 0.25;
+          break;
+      }
+
+      osc.frequency.value = freq;
+
+      osc.connect(gain);
       gain.connect(audioContext.destination);
 
-      let t = audioContext.currentTime;
+      gain.gain.setValueAtTime(0.6, audioContext.currentTime);
+      osc.start(audioContext.currentTime);
+      osc.stop(audioContext.currentTime + dur);
 
-      gain.gain.setValueAtTime(0.8, t);
+      step = (step + 1) % 4;
 
-      // ASCENSO nuclear WOOOOOOP
-      osc.frequency.setValueAtTime(180, t);
-      osc.frequency.exponentialRampToValueAtTime(1200, t + 1.4);
-
-      // CAÍDA metálica
-      osc.frequency.exponentialRampToValueAtTime(160, t + 1.7);
-
-      // Filtro se cierra (sensación de profundidad)
-      filter.frequency.exponentialRampToValueAtTime(200, t + 1.7);
-
-      // Desvanecer
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
-
-      osc.start(t);
-      osc.stop(t + 1.85);
-
-    }, 1900);
+    }, 300);
 
   } catch (e) {
-    console.warn("Error en sirena bunker:", e);
+    console.warn("Error en sirena patrón:", e);
   }
 }
 
@@ -108,14 +106,13 @@ function sirenaNuclearBunker() {
 let vozOK = false;
 
 function unlockAudioAndVoice() {
-  // Desbloqueo de voz
+
   const init = new SpeechSynthesisUtterance(".");
   init.volume = 0;
   init.lang = "es-ES";
   try { speechSynthesis.speak(init); } catch(e) {}
   vozOK = true;
 
-  // Desbloqueo WebAudio
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
@@ -141,7 +138,7 @@ function speakOmega() {
 }
 
 /* ======================================================
-   ARRANQUE GENERAL
+   ARRANQUE
 ====================================================== */
 function startAccess() {
 
@@ -186,7 +183,7 @@ function typeLine() {
 }
 
 /* ======================================================
-   COUNTDOWN — FECHA DE AYER (ACTIVACIÓN INMEDIATA)
+   COUNTDOWN — FECHA DE AYER PARA ACTIVACIÓN INSTANTÁNEA
 ====================================================== */
 let countdownInterval = null;
 
@@ -207,10 +204,10 @@ function updateCountdown() {
   if (diff <= 0) {
     clearInterval(countdownInterval);
 
-    // SIRENA NUCLEAR
-    sirenaNuclearBunker();
+    // 🔊 SIRENA PIPIPI MILITAR
+    sonarSirenaPatron();
 
-    // VOZ
+    // 🎤 VOZ
     speakOmega();
 
     box.innerHTML = `
