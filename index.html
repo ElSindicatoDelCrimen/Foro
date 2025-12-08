@@ -6,6 +6,50 @@
 <title>PREVIEW - Sindicato del Crimen</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/estilos.css">
+
+<style>
+/* ============================
+   ALERTA VISUAL PROTOCOLO OMEGA
+============================= */
+
+.alerta-omega {
+  animation: flashFondo 0.4s infinite alternate;
+}
+
+@keyframes flashFondo {
+  0% { background-color: rgba(255, 0, 0, 0.15); }
+  100% { background-color: rgba(120, 0, 0, 0.45); }
+}
+
+.alerta-omega .container,
+.alerta-omega .main-header,
+.alerta-omega .main-nav {
+  filter: hue-rotate(-30deg) contrast(1.4) saturate(2);
+}
+
+.alerta-omega-shake {
+  animation: temblorPantalla 0.2s infinite;
+}
+
+@keyframes temblorPantalla {
+  0% { transform: translate(2px,2px); }
+  25% { transform: translate(-2px,1px); }
+  50% { transform: translate(1px,-2px); }
+  75% { transform: translate(-1px,-1px); }
+  100% { transform: translate(0,0); }
+}
+
+.glitch {
+  animation: glitchMove 0.12s infinite;
+}
+
+@keyframes glitchMove {
+  0% { transform: translate(1px, -1px); }
+  50% { transform: translate(-2px, 2px); }
+  100% { transform: translate(1px, 1px); }
+}
+</style>
+
 </head>
 <body>
 
@@ -63,10 +107,8 @@ function sirenaNuclearBunker() {
       const gain = audioContext.createGain();
       const filter = audioContext.createBiquadFilter();
 
-      // Oscilador nuclear
       osc.type = "sawtooth";
 
-      // Filtro estilo bunker subterráneo
       filter.type = "lowpass";
       filter.frequency.value = 600;
       filter.Q.value = 18;
@@ -79,17 +121,15 @@ function sirenaNuclearBunker() {
 
       gain.gain.setValueAtTime(0.8, t);
 
-      // ASCENSO nuclear WOOOOOOP
+      // Ascenso nuclear profundo
       osc.frequency.setValueAtTime(180, t);
       osc.frequency.exponentialRampToValueAtTime(1200, t + 1.4);
 
-      // CAÍDA metálica
+      // Caída metálica
       osc.frequency.exponentialRampToValueAtTime(160, t + 1.7);
 
-      // Filtro se cierra (sensación de profundidad)
       filter.frequency.exponentialRampToValueAtTime(200, t + 1.7);
 
-      // Desvanecer
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
 
       osc.start(t);
@@ -103,10 +143,158 @@ function sirenaNuclearBunker() {
 }
 
 /* ======================================================
+   ALERTA VISUAL OMEGA
+====================================================== */
+function activarAlertaVisualOmega() {
+  document.body.classList.add("alerta-omega");
+  document.body.classList.add("alerta-omega-shake");
+}
+
+/* ======================================================
    DESBLOQUEO AUDIO + VOZ (iPhone)
 ====================================================== */
 let vozOK = false;
 
 function unlockAudioAndVoice() {
-  // Desbloqueo de voz
-  const init = new SpeechSynthesisUtterance
+  const init = new SpeechSynthesisUtterance(".");
+  init.volume = 0;
+  init.lang = "es-ES";
+  try { speechSynthesis.speak(init); } catch(e) {}
+  vozOK = true;
+
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    osc.frequency.value = 1;
+    osc.connect(ctx.destination);
+    osc.start();
+    osc.stop();
+  } catch(e) {}
+}
+
+/* ======================================================
+   VOZ OMEGA
+====================================================== */
+function speakOmega() {
+  if (!vozOK) return;
+  const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
+  msg.pitch = 0.5;
+  msg.rate = 0.9;
+  msg.volume = 1.0;
+  msg.lang = "es-ES";
+  speechSynthesis.speak(msg);
+}
+
+/* ======================================================
+   ARRANQUE SISTEMA
+====================================================== */
+function startAccess() {
+
+  unlockAudioAndVoice();
+
+  document.getElementById('termsModal').style.display = 'none';
+  document.getElementById('loader').style.display = 'flex';
+  typeLine();
+
+  setTimeout(() => {
+    document.getElementById("loader").classList.add("loader-hide");
+    setTimeout(() => {
+      document.getElementById("loader").style.display = "none";
+      document.querySelector('.container').style.display = 'block';
+    }, 900);
+  }, 5000);
+}
+
+/* ======================================================
+   TERMINAL LOADER
+====================================================== */
+const loaderLines = [
+  "[ MONITORING NODE ONLINE ]",
+  "Rastreando actividad del usuario...",
+  "Localizando dirección IP...",
+  "Analizando patrones de comportamiento...",
+  "Estableciendo vigilancia permanente...",
+  "Conectando con nodos ocultos...",
+  "Cifrando información sensible...",
+  "Acceso concedido ✔"
+];
+
+let indexLoader = 0;
+let textElement = document.getElementById("loaderText");
+
+function typeLine() {
+  if (indexLoader < loaderLines.length) {
+    textElement.textContent += loaderLines[indexLoader] + "\n";
+    indexLoader++;
+    setTimeout(typeLine, 430);
+  }
+}
+
+/* ======================================================
+   COUNTDOWN — FECHA DE AYER (ACTIVACIÓN INMEDIATA)
+====================================================== */
+let countdownInterval = null;
+
+function startCountdown() {
+  countdownInterval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+}
+
+function updateCountdown() {
+
+  const target = new Date();
+  target.setDate(target.getDate() - 1); // AYER
+
+  const now = new Date();
+  const diff = target - now;
+  const box = document.getElementById('countdown');
+
+  if (diff <= 0) {
+    clearInterval(countdownInterval);
+
+    sirenaNuclearBunker();
+    speakOmega();
+    activarAlertaVisualOmega();
+
+    box.innerHTML = `
+      <div class="scanlines">
+        <div class="glitch" data-text="⚠ PROTOCOLO OMEGA ACTIVADO ⚠">
+          ⚠ PROTOCOLO OMEGA ACTIVADO ⚠
+        </div><br><br>
+
+        <div class="glow-anim">
+          El Sindicato del Crimen confirma el inicio de la operación<br>
+          <b>"NOCHE NEGRA NAVIDEÑA"</b>.
+        </div><br>
+
+        <div class="alert-blink">
+          Canal Omega abierto — Contraseña li24ruXIMAYpar175
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerText = "00:00:00";
+}
+
+startCountdown();
+
+/* ======================================================
+   SCROLL FX
+====================================================== */
+window.addEventListener('scroll', () => {
+  const header = document.querySelector('.main-header');
+  const nav = document.querySelector('.main-nav');
+  if (window.scrollY > 20) {
+    header.classList.add('scrolled');
+    nav.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+    nav.classList.remove('scrolled');
+  }
+});
+</script>
+
+</body>
+</html>
