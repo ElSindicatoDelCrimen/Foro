@@ -443,3 +443,9 @@ html, body {
     margin-top: 0 !important;
   }
 }
+
+.news-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
