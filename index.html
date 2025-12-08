@@ -9,9 +9,6 @@
 </head>
 <body>
 
-<!-- PRELOAD DEL SONIDO DE ALARMA -->
-<audio id="alarma" src="audio/alarm.wav" preload="auto"></audio>
-
 <div id="loader" class="loader-screen" style="display:none;">
   <div class="loader-terminal">
     <pre id="loaderText"></pre>
@@ -49,65 +46,84 @@
 
 <script>
 /* ======================================================
-   DESBLOQUEO AUTOMÁTICO DE VOZ + AUDIO PARA iPHONE
+   SIRENA MILITAR (SIN ARCHIVOS — FUNCIONA EN IPHONE)
 ====================================================== */
+function sonarSirenaMilitar() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
 
+    osc.type = "sawtooth";
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    let t = audioContext.currentTime;
+    const cycles = 4;
+
+    for (let i = 0; i < cycles; i++) {
+      osc.frequency.setValueAtTime(600, t);
+      gain.gain.setValueAtTime(0.7, t);
+      t += 0.25;
+
+      osc.frequency.setValueAtTime(300, t);
+      gain.gain.setValueAtTime(0.7, t);
+      t += 0.25;
+    }
+
+    gain.gain.setValueAtTime(0, t);
+    osc.start(audioContext.currentTime);
+    osc.stop(t + 0.1);
+
+  } catch(e) {
+    console.warn("Error al reproducir sirena militar:", e);
+  }
+}
+
+/* ======================================================
+   DESBLOQUEO DE AUDIO Y VOZ PARA iPHONE
+====================================================== */
 let vozOK = false;
-let audioOK = false;
 
 function unlockAudioAndVoice() {
 
-  // Utterance silencioso → desbloquea speechSynthesis en iOS
+  // DESBLOQUEO DE VOZ
   const init = new SpeechSynthesisUtterance(".");
   init.volume = 0;
   init.lang = "es-ES";
-  speechSynthesis.speak(init);
+  try { speechSynthesis.speak(init); } catch(e) {}
   vozOK = true;
 
-  // Reproducir y pausar el audio → desbloquea HTML5 audio
-  const alarma = document.getElementById("alarma");
-  alarma.volume = 0;
-  alarma.play().then(() => {
-    alarma.pause();
-    alarma.currentTime = 0;
-    audioOK = true;
-  }).catch(() => {
-    // iOS a veces requiere 2 intentos, lo reintentamos silencioso
-    setTimeout(() => {
-      alarma.play().then(() => {
-        alarma.pause();
-        alarma.currentTime = 0;
-        audioOK = true;
-      });
-    }, 150);
-  });
+  // DESBLOQUEO DE WEB AUDIO (INDISPENSABLE PARA IPHONE)
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const empty = ctx.createOscillator();
+    empty.frequency.value = 0;
+    empty.connect(ctx.destination);
+    empty.start();
+    empty.stop();
+  } catch(e) {}
 }
 
-
 /* ======================================================
-   FUNCIÓN DE VOZ
+   VOZ FINAL
 ====================================================== */
 function speakOmega() {
   if (!vozOK) return;
-
   const msg = new SpeechSynthesisUtterance("Protocolo Omega activado.");
   msg.pitch = 0.5;
   msg.rate = 0.9;
   msg.volume = 1.0;
-  msg.lang = "es-ES";
   speechSynthesis.speak(msg);
 }
-
 
 /* ======================================================
    ARRANQUE DEL SISTEMA
 ====================================================== */
 function startAccess() {
 
-  // 1️⃣ DESBLOQUEO DE VOZ + AUDIO (iPhone compatible)
   unlockAudioAndVoice();
 
-  // 2️⃣ Animación de acceso
   document.getElementById('termsModal').style.display = 'none';
   document.getElementById('loader').style.display = 'flex';
   typeLine();
@@ -121,9 +137,8 @@ function startAccess() {
   }, 5000);
 }
 
-
 /* ======================================================
-   TERMINAL DE CARGA
+   ANIMACIÓN TERMINAL
 ====================================================== */
 const loaderLines = [
   "[ MONITORING NODE ONLINE ]",
@@ -147,9 +162,8 @@ function typeLine() {
   }
 }
 
-
 /* ======================================================
-   COUNTDOWN
+   COUNTDOWN (FECHA DE AYER = ACTIVADO YA)
 ====================================================== */
 let countdownInterval = null;
 
@@ -159,23 +173,19 @@ function startCountdown() {
 }
 
 function updateCountdown() {
-  const target = new Date("2025-12-08T18:10:00");
+
+  // FECHA DE AYER PARA ACTIVAR AUTOMÁTICAMENTE
+  const target = new Date();
+  target.setDate(target.getDate() - 1);
+
   const now = new Date();
   const diff = target - now;
   const box = document.getElementById('countdown');
-  if (!box) return;
 
   if (diff <= 0) {
     clearInterval(countdownInterval);
 
-    // 1️⃣ Pitido de alarma
-    const alarma = document.getElementById("alarma");
-    if (audioOK) {
-      alarma.volume = 1;
-      alarma.play();
-    }
-
-    // 2️⃣ Voz del protocolo
+    sonarSirenaMilitar();
     speakOmega();
 
     box.innerHTML = `
@@ -197,14 +207,10 @@ function updateCountdown() {
     return;
   }
 
-  const hours = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, "0");
-  const minutes = String(Math.floor(diff / 1000 / 60 % 60)).padStart(2, "0");
-  const seconds = String(Math.floor(diff / 1000 % 60)).padStart(2, "0");
-  box.innerText = `${hours}:${minutes}:${seconds}`;
+  box.innerText = "00:00:00";
 }
 
 startCountdown();
-
 
 /* ======================================================
    SCROLL HEADER FX
@@ -224,4 +230,3 @@ window.addEventListener('scroll', () => {
 
 </body>
 </html>
-
