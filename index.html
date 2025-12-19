@@ -194,7 +194,8 @@ function startCountdown() {
 
 function updateCountdown() {
 
-  const target = new Date();
+  /*const target = new Date();*/
+  const target = new Date("2025-12-22T13:00:00");
   target.setDate(target.getDate() - 1); // AYER
 
   const now = new Date();
@@ -252,3 +253,4 @@ window.addEventListener('scroll', () => {
 
 </body>
 </html>
+
